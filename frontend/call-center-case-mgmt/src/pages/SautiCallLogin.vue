@@ -3,22 +3,20 @@
     <div class="login-container">
       <div class="side-panel left-panel">
         <div class="flag-strip left-flag">
-          <div class="flag-segment black"></div>
-          <div class="flag-segment white"></div>
-          <div class="flag-segment red"></div>
-          <div class="flag-segment white"></div>
-          <div class="flag-segment green"></div>
+          <div class="flag-segment black-ug"></div>
+          <div class="flag-segment yellow-ug"></div>
+          <div class="flag-segment red-ug"></div>
         </div>
         <div class="pattern-bg pattern-bg-left"></div>
       </div>
       <div class="center-panel">
         <div class="form-section">
           <div class="coat-of-arms-container">
-            <img src="@/assets/images/coat of arms.png" alt="Kenya Coat of Arms" class="coat-of-arms" />
+            <img :src="ugandaCoatOfArms" alt="Uganda Coat of Arms" class="coat-of-arms" />
           </div>
           <h2 class="form-title">
             <span v-if="currentStep === 'email'">
-              Welcome to <span class="openchs-kenya-flag">OPENCHS</span>
+              Welcome to <span class="openchs-uganda-flag">SAUTICALL</span>
             </span>
             <span v-else-if="currentStep === 'otp'">Enter verification code</span>
             <span v-else-if="currentStep === 'password'">Enter your password</span>
@@ -255,11 +253,9 @@
       </div>
       <div class="side-panel right-panel">
         <div class="flag-strip right-flag-bar">
-          <div class="flag-segment black"></div>
-          <div class="flag-segment white"></div>
-          <div class="flag-segment red"></div>
-          <div class="flag-segment white"></div>
-          <div class="flag-segment green"></div>
+          <div class="flag-segment black-ug"></div>
+          <div class="flag-segment yellow-ug"></div>
+          <div class="flag-segment red-ug"></div>
         </div>
         <div class="pattern-bg pattern-bg-right"></div>
       </div>
@@ -270,6 +266,7 @@
 <script>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import ugandaCoatOfArms from '@/assets/images/Coat_of_arms_of_Uganda.svg.png';
 // import axiosInstance from '../utils/axios';
 
 export default {
@@ -441,7 +438,7 @@ export default {
         localStorage.setItem('refresh_token', mockResponse.refresh_token);
         localStorage.setItem('user', JSON.stringify(mockResponse.user));
         localStorage.setItem('session_id', mockResponse.session_id);
-        localStorage.setItem('brand', 'kenya'); // Set brand for Kenya
+        localStorage.setItem('brand', 'uganda'); // Set brand for SautiCall
 
         // Store SIP information
         localStorage.setItem('sipConnectionDetails', JSON.stringify({
@@ -527,7 +524,7 @@ export default {
         localStorage.setItem('refresh_token', mockResponse.refresh_token);
         localStorage.setItem('user', JSON.stringify(mockResponse.user));
         localStorage.setItem('session_id', mockResponse.session_id);
-        localStorage.setItem('brand', 'kenya'); // Set brand for Kenya
+        localStorage.setItem('brand', 'uganda'); // Set brand for SautiCall
 
         // Store SIP information
         localStorage.setItem('sipConnectionDetails', JSON.stringify({
@@ -682,6 +679,7 @@ export default {
       handleForgotPassword,
       handleHelp,
       sipConnectionDetails,
+      ugandaCoatOfArms
     };
   }
 };
@@ -699,12 +697,13 @@ export default {
   letter-spacing: 0.04em;
   font-weight: normal;
 }
-.openchs-kenya-flag {
+.openchs-uganda-flag {
   background: linear-gradient(
     to right,
-    #000 0%, #000 33%,      /* Black */
-    #bc0103 33%, #bc0103 66%, /* Red */
-    #006817 66%, #006817 100% /* Green */
+    #000 33.33%, 
+    #FFD700 33.33%, 
+    #FFD700 66.66%, 
+    #D90000 66.66%
   );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -819,23 +818,18 @@ body {
 }
 .flag-segment {
   width: 100%;
-  height: 20%;
 }
-.flag-segment.black {
+.flag-segment.black-ug {
   background: #000;
-  height: 32%;
+  height: 33.34%;
 }
-.flag-segment.white {
-  background: #fff;
-  height: 4%;
+.flag-segment.yellow-ug {
+  background: #FFD700;
+  height: 33.33%;
 }
-.flag-segment.red {
-  background: #bc0103;
-  height: 28%;
-}
-.flag-segment.green {
-  background: #1e7e34;
-  height: 32%;
+.flag-segment.red-ug {
+  background: #D90000;
+  height: 33.33%;
 }
 .welcome-section {
   flex: 1;
@@ -925,12 +919,12 @@ body {
 }
 
 .step.active .step-number {
-  background-color: #1e7e34;
+  background-color: #000000;
   color: white;
 }
 
 .step.completed .step-number {
-  background-color: #006817;
+  background-color: #000000;
   color: white;
 }
 
@@ -1027,9 +1021,9 @@ body {
 }
 
 .form-input:focus {
-  border-color: #1e7e34;
+  border-color: #000000;
   border-style: dotted;
-  box-shadow: 0 0 0 3px rgba(30, 126, 52, 0.1);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
   outline: none;
 }
 
@@ -1079,14 +1073,14 @@ body {
 }
 
 .method-option:hover {
-  border-color: #1e7e34;
-  background-color: rgba(30, 126, 52, 0.05);
+  border-color: #000000;
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .method-option.active {
-  border-color: #1e7e34;
-  background-color: rgba(30, 126, 52, 0.1);
-  box-shadow: 0 0 0 3px rgba(30, 126, 52, 0.1);
+  border-color: #000000;
+  background-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
 }
 
 .method-icon {
@@ -1129,9 +1123,9 @@ body {
 }
 
 .form-select:focus {
-  border-color: #1e7e34;
+  border-color: #000000;
   border-style: dotted;
-  box-shadow: 0 0 0 3px rgba(30, 126, 52, 0.1);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
   outline: none;
 }
 
@@ -1173,14 +1167,14 @@ body {
 .means-description {
   margin-top: 0.75rem;
   padding: 8px 12px;
-  background-color: rgba(30, 126, 52, 0.05);
+  background-color: rgba(0, 0, 0, 0.05);
   border-radius: 6px;
-  border-left: 3px solid #1e7e34;
+  border-left: 3px solid #000000;
 }
 
 .means-text {
   font-size: 12px;
-  color: #1e7e34;
+  color: #000000;
   font-weight: 600;
   margin: 0;
 }
@@ -1220,12 +1214,12 @@ body {
 }
 
 .checkbox-container:hover input~.checkmark {
-  border-color: #1e7e34;
+  border-color: #000000;
 }
 
 .checkbox-container input:checked~.checkmark {
-  background-color: #1e7e34;
-  border-color: #1e7e34;
+  background-color: #000000;
+  border-color: #000000;
 }
 
 .checkmark:after {
@@ -1295,9 +1289,9 @@ body {
 }
 
 .otp-input:focus {
-  border-color: #1e7e34;
+  border-color: #000000;
   border-style: dotted;
-  box-shadow: 0 0 0 3px rgba(30, 126, 52, 0.1);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
   outline: none;
 }
 
@@ -1319,7 +1313,7 @@ body {
 .resend-button {
   background: none;
   border: none;
-  color: #1e7e34;
+  color: #000000;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -1328,7 +1322,7 @@ body {
 }
 
 .resend-button:hover {
-  color: #167029;
+  color: #333333;
 }
 
 .resend-button:disabled {
@@ -1354,8 +1348,8 @@ body {
 
 .back-button:hover {
   color: #000000;
-  border-color: #1e7e34;
-  background-color: rgba(30, 126, 52, 0.05);
+  border-color: #000000;
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .back-button:disabled {
@@ -1366,7 +1360,7 @@ body {
 .login-button {
   width: 100%;
   padding: 14px;
-  background-color: #1e7e34;
+  background-color: #000000;
   color: #fff;
   border: none;
   border-radius: 30px;
@@ -1375,19 +1369,19 @@ body {
   cursor: pointer;
   margin-bottom: 1.5rem;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(30, 126, 52, 0.2);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
 .login-button:hover:not(:disabled) {
-  background-color: #167029;
+  background-color: #D90000;
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(30, 126, 52, 0.3);
+  box-shadow: 0 6px 12px rgba(217, 0, 0, 0.3);
 }
 
 .login-button:active:not(:disabled) {
-  background-color: #167029;
+  background-color: #D90000;
   transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(30, 126, 52, 0.3);
+  box-shadow: 0 2px 4px rgba(217, 0, 0, 0.3);
 }
 
 .login-button:disabled {
@@ -1423,7 +1417,7 @@ body {
 }
 
 .forgot-link {
-  color: #1e7e34;
+  color: #D90000;
   text-decoration: none;
   font-size: 14px;
   font-weight: 600;
@@ -1441,7 +1435,7 @@ body {
 }
 
 .help-link {
-  color: #1e7e34;
+  color: #000000;
   text-decoration: none;
   font-weight: 700;
 }
@@ -1564,8 +1558,8 @@ body {
   gap: 0;
 }
 .partners-label-colored .c-black { color: #222; }
-.partners-label-colored .c-red { color: #bc0103; }
-.partners-label-colored .c-green { color: #1e7e34; }
+.partners-label-colored .c-red { color: #D90000; }
+.partners-label-colored .c-green { color: #000000; }
 .partners-logos-row {
   display: flex;
   gap: 18px;

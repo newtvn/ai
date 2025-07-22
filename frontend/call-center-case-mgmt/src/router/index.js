@@ -13,9 +13,11 @@ import CaseCreation from '../pages/CaseCreation.vue'
 import superadmin from '../pages/SuperAdminDashboard.vue'
 import AdminPanel from '../pages/AdminPanel.vue'
 import TestCall from '../pages/TestCall.vue'
+import SautiCallLogin from '../pages/SautiCallLogin.vue'
 
 const routes = [
   { path: '/', component: Login },
+  { path: '/sauticall-login', component: SautiCallLogin },
   { path: '/dashboard', component: Dashboard },
   { path: '/calls', component: Calls },
   { path: '/cases', component: Cases },

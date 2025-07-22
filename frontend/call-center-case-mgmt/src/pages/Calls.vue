@@ -41,6 +41,8 @@
         <div class="view-tab" :class="{ active: activeView === 'timeline' }" @click="activeView = 'timeline'">Timeline</div>
         <div class="view-tab" :class="{ active: activeView === 'table' }" @click="activeView = 'table'">Table View</div>
         <div class="view-tab" :class="{ active: activeView === 'queue' }" @click="activeView = 'queue'">Call Queue</div>
+        <div class="view-tab" :class="{ active: activeView === 'metrics' }" @click="activeView = 'metrics'">Metrics</div>
+        <div class="view-tab" :class="{ active: activeView === 'reports' }" @click="activeView = 'reports'">Reports</div>
       </div>
 
       <!-- Status Cards - Horizontal Layout -->
@@ -188,6 +190,70 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- Metrics Tab -->
+      <div class="view-container" v-show="activeView === 'metrics'">
+        <div class="metrics-filters">
+          <label>Date Range:
+            <select v-model="metricsDateRange">
+              <option v-for="opt in metricsDateOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+            </select>
+          </label>
+          <label>Agent:
+            <select v-model="metricsAgent">
+              <option v-for="opt in metricsAgentOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+            </select>
+          </label>
+        </div>
+        <div class="metrics-charts">
+          <Pie :data="callTypeData" :options="callTypeOptions" />
+        </div>
+      </div>
+
+      <!-- Reports Tab -->
+      <div class="view-container" v-show="activeView === 'reports'">
+        <div class="reports-filters">
+          <label>Date:
+            <select v-model="reportsDate">
+              <option value="">All</option>
+              <option v-for="opt in reportsDateOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+            </select>
+          </label>
+          <label>Agent:
+            <select v-model="reportsAgent">
+              <option v-for="opt in reportsAgentOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+            </select>
+          </label>
+        </div>
+        <div class="reports-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Call ID</th>
+                <th>Agent</th>
+                <th>Type</th>
+                <th>Date</th>
+                <th>Duration</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="row in filteredReports" :key="row.id">
+                <td>{{ row.id }}</td>
+                <td>{{ row.agent }}</td>
+                <td>{{ row.type }}</td>
+                <td>{{ row.date }}</td>
+                <td>{{ row.duration }}</td>
+                <td>{{ row.status }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="reports-export">
+          <button class="btn-primary" @click="exportReportsPDF">Export as PDF</button>
+          <button class="btn-primary" @click="exportReportsExcel">Export as CSV/Excel</button>
         </div>
       </div>
     </div>
@@ -962,6 +1028,19 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import SidePanel from '@/components/SidePanel.vue'
+import { Pie } from 'vue-chartjs'
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  CategoryScale,
+} from 'chart.js'
+import jsPDF from 'jspdf'
+import * as XLSX from 'xlsx'
+
+ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale)
 
 const router = useRouter()
 const isSidebarCollapsed = ref(false)
@@ -1924,6 +2003,78 @@ onUnmounted(() => {
     ringingStartTime.value = null
   }
 })
+
+// Metrics tab sample data
+const metricsDateRange = ref('last7')
+const metricsAgent = ref('all')
+const metricsDateOptions = [
+  { label: 'Last 7 Days', value: 'last7' },
+  { label: 'Last 30 Days', value: 'last30' },
+  { label: 'This Year', value: 'year' },
+]
+const metricsAgentOptions = [
+  { label: 'All Agents', value: 'all' },
+  { label: 'Sarah Davis', value: 'sarah' },
+  { label: 'Mark Reynolds', value: 'mark' },
+  { label: 'Emily Chan', value: 'emily' },
+]
+const callTypeData = ref({
+  labels: ['Emergency', 'Follow-up', 'Therapy', 'Information'],
+  datasets: [
+    {
+      label: 'Call Types',
+      backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4CAF50'],
+      data: [12, 19, 7, 5],
+    },
+  ],
+})
+const callTypeOptions = ref({
+  responsive: true,
+  plugins: {
+    legend: { position: 'bottom' },
+    title: { display: true, text: 'Call Types Distribution' },
+  },
+})
+// Reports tab sample data
+const reportsDate = ref('2025-08-15')
+const reportsAgent = ref('all')
+const reportsDateOptions = [
+  { label: '2025-08-15', value: '2025-08-15' },
+  { label: '2025-08-14', value: '2025-08-14' },
+]
+const reportsAgentOptions = [
+  { label: 'All Agents', value: 'all' },
+  { label: 'Sarah Davis', value: 'sarah' },
+  { label: 'Mark Reynolds', value: 'mark' },
+  { label: 'Emily Chan', value: 'emily' },
+]
+const reportsTableData = ref([
+  { id: '1348456', agent: 'Sarah Davis', type: 'Emergency', date: '2025-08-15', duration: '3:05', status: 'Completed' },
+  { id: '1348457', agent: 'Mark Reynolds', type: 'Therapy', date: '2025-08-15', duration: '45:10', status: 'Completed' },
+  { id: '1348458', agent: 'Emily Chan', type: 'Follow-up', date: '2025-08-14', duration: '22:15', status: 'Completed' },
+])
+const filteredReports = computed(() => {
+  return reportsTableData.value.filter(row =>
+    (reportsAgent.value === 'all' || row.agent === reportsAgentOptions.find(a => a.value === reportsAgent.value)?.label) &&
+    (reportsDate.value === '' || row.date === reportsDate.value)
+  )
+})
+function exportReportsPDF() {
+  const doc = new jsPDF()
+  doc.text('Call Reports', 10, 10)
+  let y = 20
+  filteredReports.value.forEach(row => {
+    doc.text(`${row.id} | ${row.agent} | ${row.type} | ${row.date} | ${row.duration} | ${row.status}`, 10, y)
+    y += 10
+  })
+  doc.save('call-reports.pdf')
+}
+function exportReportsExcel() {
+  const ws = XLSX.utils.json_to_sheet(filteredReports.value)
+  const wb = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(wb, ws, 'Reports')
+  XLSX.writeFile(wb, 'call-reports.xlsx')
+}
 </script>
 
 <style scoped>
@@ -4050,5 +4201,113 @@ body.dark .calls-table th, body.dark .calls-table td,
 body.dark .queue-section, body.dark .queue-section *,
 [data-theme="dark"] .queue-section, [data-theme="dark"] .queue-section * {
   color: #fff !important;
+}
+
+/* Metrics Tab */
+.metrics-filters, .reports-filters {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 16px 24px 0 24px;
+  background: var(--card-bg);
+  border-radius: 16px 16px 0 0;
+  flex-wrap: wrap;
+}
+.metrics-filters label, .reports-filters label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+.metrics-filters select, .reports-filters select {
+  margin-left: 8px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  font-size: 14px;
+  background: var(--input-bg);
+  color: var(--text-color);
+}
+.metrics-charts {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--card-bg);
+  border-radius: 0 0 16px 16px;
+  padding: 32px 0 32px 0;
+  min-height: 350px;
+}
+.metrics-charts canvas {
+  max-width: 420px !important;
+  max-height: 420px !important;
+}
+.reports-table {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+}
+.reports-table table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.reports-table th {
+  text-align: left;
+  padding: 14px 16px;
+  background: var(--header-bg);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text-color);
+  border-bottom: 2px solid var(--border-color);
+}
+.reports-table td {
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--text-color);
+  border-bottom: 1px solid var(--border-color);
+}
+.reports-table tr:nth-child(even) td {
+  background: rgba(0,0,0,0.03);
+}
+.reports-table tr:hover td {
+  background: rgba(255, 140, 0, 0.08);
+}
+.reports-export {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 8px;
+  padding: 0 24px 24px 24px;
+}
+.reports-export button {
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.reports-export button:hover {
+  background-color: var(--accent-hover);
+  transform: translateY(-1px);
+}
+@media (max-width: 900px) {
+  .metrics-filters, .reports-filters, .reports-export {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+  }
+  .metrics-charts {
+    padding: 16px 0;
+  }
+  .reports-table {
+    padding: 12px;
+  }
 }
 </style>

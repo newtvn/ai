@@ -17,7 +17,7 @@
 
       <div class="sidebar-content">
         <div class="sidepanel-coatofarms">
-          <img src="@/assets/images/coat of arms.png" alt="Kenya Coat of Arms" />
+          <img :src="coatOfArmsSrc" :alt="coatOfArmsAlt" />
         </div>
         <div class="sidebar-header">
           <!-- Logo removed as requested -->
@@ -141,6 +141,8 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import kenyaCoatOfArms from '@/assets/images/coat of arms.png';
+import ugandaCoatOfArms from '@/assets/images/Coat_of_arms_of_Uganda.svg.png';
 
 // Router setup
 const router = useRouter()
@@ -176,6 +178,22 @@ const emit = defineEmits([
 // Local state
 const isSidebarCollapsed = ref(false)
 const mobileOpen = ref(false)
+
+const coatOfArmsSrc = computed(() => {
+  const brand = localStorage.getItem('brand');
+  if (brand === 'uganda') {
+    return ugandaCoatOfArms;
+  }
+  return kenyaCoatOfArms;
+});
+
+const coatOfArmsAlt = computed(() => {
+  const brand = localStorage.getItem('brand');
+  if (brand === 'uganda') {
+    return 'Uganda Coat of Arms';
+  }
+  return 'Kenya Coat of Arms';
+});
 
 // Computed properties
 const queueStatus = computed(() => {
